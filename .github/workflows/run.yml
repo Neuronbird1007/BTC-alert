@@ -1,0 +1,29 @@
+name: Weekly BTC SMA20 Check
+
+on:
+  schedule:
+    # 这里的 cron 表达式意思是：每周一的 UTC 时间 00:05 运行
+    # 换算成北京时间就是每周一早上 08:05（正好是周线彻底收盘后 5 分钟！）
+    - cron: '5 0 * * 1'
+  workflow_dispatch: # 允许你随时手动点按钮测试
+
+jobs:
+  check-sma:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+        
+      - name: 安装 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: 安装依赖包
+        run: pip install requests
+        
+      - name: 运行监控脚本
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: python check_sma20.py
